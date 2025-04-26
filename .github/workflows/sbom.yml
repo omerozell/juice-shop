@@ -34,3 +34,8 @@ jobs:
       with:
         name: juice-shop-image-sbom
         path: sbom-juice-shop-image.json
+
+    - name: Run Semgrep SAST Scan
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: 'auto'

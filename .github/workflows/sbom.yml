@@ -1,4 +1,4 @@
-name: (SEMGREP) Generate SBOM and Run SAST for Juice Shop 
+name: Generate SBOM and Run SAST for Juice Shop
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
   workflow_dispatch:
 
-permissions:  # 👈 Bu kısım önemli
+permissions:
   contents: read
   security-events: write
 
@@ -39,15 +39,13 @@ jobs:
         name: juice-shop-image-sbom
         path: sbom-juice-shop-image.json
 
-    - name: Install Semgrep via curl
+    - name: Download Semgrep Binary
       run: |
-        curl -L https://github.com/semgrep/semgrep/releases/latest/download/semgrep-linux-amd64 -o /usr/local/bin/semgrep
-        chmod +x /usr/local/bin/semgrep
-        semgrep --version
+        curl -L https://github.com/semgrep/semgrep/releases/latest/download/semgrep-linux-amd64 -o semgrep
 
     - name: Run Semgrep Scan and Generate SARIF
       run: |
-        semgrep scan --config auto --sarif > semgrep-results.sarif
+        ./semgrep scan --config auto --sarif > semgrep-results.sarif
 
     - name: Upload Semgrep SARIF to GitHub Security
       uses: github/codeql-action/upload-sarif@v3

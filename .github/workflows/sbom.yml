@@ -1,0 +1,36 @@
+name: Generate SBOM for Juice Shop Docker Image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  generate-sbom-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Juice Shop repo
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Juice Shop Docker Image
+      run: |
+        docker build -t juice-shop:latest .
+
+    - name: Install Syft
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+    - name: Generate SBOM from Docker Image
+      run: |
+        syft juice-shop:latest -o json > sbom-juice-shop-image.json
+
+    - name: Upload SBOM Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: juice-shop-image-sbom
+        path: sbom-juice-shop-image.json

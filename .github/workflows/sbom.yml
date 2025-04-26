@@ -28,7 +28,7 @@ jobs:
     - name: Install Syft
       run: |
         curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
-
+        
     - name: Generate SBOM from Docker Image
       run: |
         syft juice-shop:latest -o json > sbom-juice-shop-image.json
@@ -42,7 +42,8 @@ jobs:
     - name: Download Semgrep Binary
       run: |
         curl -L https://github.com/semgrep/semgrep/releases/latest/download/semgrep-linux-amd64 -o semgrep
-
+        chmod +x semgrep
+        
     - name: Run Semgrep Scan and Generate SARIF
       run: |
         ./semgrep scan --config auto --sarif > semgrep-results.sarif

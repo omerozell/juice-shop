@@ -1,4 +1,4 @@
-name: Generate SBOM for Juice Shop Docker Image
+name: (SEMGREP) Generate SBOM and Run SAST for Juice Shop 
 
 on:
   push:
@@ -6,8 +6,12 @@ on:
       - master
   workflow_dispatch:
 
+permissions:  # 👈 Bu kısım önemli
+  contents: read
+  security-events: write
+
 jobs:
-  generate-sbom-image:
+  generate-sbom-and-sast:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +39,13 @@ jobs:
         name: juice-shop-image-sbom
         path: sbom-juice-shop-image.json
 
-    - name: Run Semgrep SAST Scan
+    - name: Run Semgrep SAST Scan and Generate SARIF
       uses: returntocorp/semgrep-action@v1
       with:
         config: 'auto'
+        sarif: semgrep-results.sarif
+
+    - name: Upload Semgrep SARIF to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep-results.sarif
